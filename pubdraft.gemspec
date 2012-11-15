@@ -7,10 +7,9 @@ Gem::Specification.new do |gem|
   gem.name          = "pubdraft"
   gem.version       = Pubdraft::VERSION
   gem.authors       = ["Joe Sak"]
-  gem.email         = ["joe@joesak.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.email         = ["joe@neotericdesign.com"]
+  gem.description   = %q{Quickly add publish/draft state to your ActiveRecord models}
+  gem.summary       = %q{Quick publish/draft state on ActiveRecord models}
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
