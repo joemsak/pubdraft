@@ -51,13 +51,17 @@ module Pubdraft
     def pubdraft_states_for_select
       [['Published', 'published'], ['Drafted', 'drafted']]
     end
+
+    def pubdraft_state_options
+      options_for_select(pubdraft_states_for_select)
+    end
   end
 
   if defined?(ActiveRecord::Base)
     ActiveRecord::Base.extend Pubdraft::ClassMethods
   end
 
-  if defined?(ApplicationHelper)
-    ApplicationHelper.extend Pubdraft::HelperMethods
+  if defined?(ActionView::Base)
+    ActionView::Base.send(:include, Pubdraft::HelperMethods)
   end
 end

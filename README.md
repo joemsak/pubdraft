@@ -41,6 +41,21 @@ MyModel.published #=> [published records]
 MyModel.drafted   #=> [drafted records]
 ```
 
+## View Helpers
+
+The gem provides a view helper to easily populate select boxes
+```html.erb
+<!-- Standard Form Helpers -->
+<%= form_for @record do |f| %>
+  <%= f.select :state, pubdraft_state_options %>
+<% end %>
+
+<!-- Formtastic -->
+<%= semantic_form_for @record do |f| %>
+  <%= f.input :state, :collection => pubdraft_states_for_select, :as => :select %>
+<% end %>
+```
+
 ## Contributing
 
 1. Fork it
