@@ -44,7 +44,7 @@ MyModel.drafted   #=> [drafted records]
 ## View Helpers
 
 The gem provides a view helper to easily populate select boxes
-```html.erb
+```erb
 <!-- Standard Form Helpers -->
 <%= form_for @record do |f| %>
   <%= f.select :state, pubdraft_state_options %>
