@@ -1,12 +1,14 @@
 # Pubdraft
 
-TODO: Write a gem description
+Quickly add published/drafted states to your ActiveRecord models, with helpful scopes and instance methods for querying and changing the states
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'pubdraft'
+```ruby
+gem 'pubdraft'
+```
 
 And then execute:
 
@@ -18,7 +20,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+# requires string column `state` to exist
+# $ rails g migration AddStateToMyModels state
+
+class MyModel < ActiveRecord::Base
+  pubdraft
+end
+
+record = MyModel.create!
+record.published? #=> true
+
+record.draft!
+record.drafted?   #=> true
+
+record.publish!
+record.published? #=> true
+
+MyModel.published #=> [published records]
+MyModel.drafted   #=> [drafted records]
+```
 
 ## Contributing
 

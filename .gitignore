@@ -1,3 +1,4 @@
+*.sqlite
 *.rbc
 .bundle
 .config
