@@ -6,8 +6,8 @@ module Pubdraft
       base.send :before_create, :set_pubdraft_state
       base.attr_accessible :state
 
-      base.scope :published, base.where(:state => 'published')
-      base.scope :drafted,   base.where(:state => 'drafted')
+      base.scope :published, lambda { base.where(:state => 'published') }
+      base.scope :drafted,   lambda { base.where(:state => 'drafted') }
     end
 
     def published?
