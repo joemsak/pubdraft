@@ -4,7 +4,6 @@ module Pubdraft
   module InstanceMethods
     def self.included(base)
       base.send :before_create, :set_pubdraft_state
-      base.attr_accessible :state
 
       base.scope :published, lambda { base.where(:state => 'published') }
       base.scope :drafted,   lambda { base.where(:state => 'drafted') }
