@@ -1,4 +1,5 @@
 require "pubdraft/version"
+require "pubdraft/engine"
 
 module Pubdraft
   module InstanceMethods
@@ -44,23 +45,5 @@ module Pubdraft
     def pubdraft
       send(:include, InstanceMethods)
     end
-  end
-
-  module HelperMethods
-    def pubdraft_states_for_select
-      [['Published', 'published'], ['Drafted', 'drafted']]
-    end
-
-    def pubdraft_state_options
-      options_for_select(pubdraft_states_for_select)
-    end
-  end
-
-  if defined?(ActiveRecord::Base)
-    ActiveRecord::Base.extend Pubdraft::ClassMethods
-  end
-
-  if defined?(ActionView::Base)
-    ActionView::Base.send(:include, Pubdraft::HelperMethods)
   end
 end
