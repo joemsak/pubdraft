@@ -1,42 +1,85 @@
-require 'spec_no_rails_helper'
+require 'spec_helper'
 require 'pubdraft'
 
 class CreateTestData < ActiveRecord::Migration
-  unless table_exists?('fake_things')
-    create_table :fake_things do |t|
+  unless data_source_exists?('default_things')
+    create_table :default_things do |t|
       t.string :state
+    end
+  end
+
+  unless data_source_exists?('custom_things')
+    create_table :custom_things do |t|
+      t.string :publication_status
     end
   end
 end
 
-class FakeThing < ActiveRecord::Base
+class DefaultThing < ActiveRecord::Base
   pubdraft
 end
 
+class CustomThing < ActiveRecord::Base
+  pubdraft states: { drafted: :draft, in_review: :mark_for_review }, field: :publication_status, default: :in_review
+end
+
+
 describe Pubdraft do
-  before { @class = FakeThing }
+  context 'defaults' do
+    let(:klass) { DefaultThing }
 
-  it "defaults to published state" do
-    obj = @class.create!
+    it "defaults to published state" do
+      obj = klass.create!
 
-    obj.should be_published
+      expect(obj).to be_published
+    end
+
+    it "changes states" do
+      obj = klass.create!
+
+      obj.draft!
+      expect(obj).to be_drafted
+
+      obj.publish!
+      expect(obj).to be_published
+    end
+
+    it "has scopes" do
+      published = klass.create!
+      drafted   = klass.create!(:state => 'drafted')
+
+      expect(klass.published).to match_array([published])
+      expect(klass.drafted).to match_array([drafted])
+    end
   end
 
-  it "changes states" do
-    obj = @class.create!
+  context 'customized' do
+    let(:klass) { CustomThing }
 
-    obj.draft!
-    obj.should be_drafted
+    it "defaults to in review state" do
+      obj = klass.create!
 
-    obj.publish!
-    obj.should be_published
-  end
+      expect(obj).to be_in_review
+    end
 
-  it "has scopes" do
-    published = @class.create!
-    drafted   = @class.create!(:state => 'drafted')
+    it "changes states" do
+      obj = klass.create!
 
-    @class.published.should == [published]
-    @class.drafted.should   == [drafted]
+      obj.draft!
+      expect(obj.publication_status).to eq('drafted')
+      expect(obj.reload).to be_drafted
+
+      obj.mark_for_review!
+      expect(obj.publication_status).to eq('in_review')
+      expect(obj.reload).to be_in_review
+    end
+
+    it "has scopes" do
+      in_review = klass.create!
+      drafted   = klass.create!(:publication_status => 'drafted')
+
+      expect(klass.in_review).to match_array([in_review])
+      expect(klass.drafted).to match_array([drafted])
+    end
   end
 end
