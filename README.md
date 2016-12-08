@@ -1,31 +1,35 @@
 # Pubdraft
 
-Quickly add published/drafted states to your ActiveRecord models, with helpful scopes and instance methods for querying and changing the states
+Publication state management for the Neoteric Design CMS
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Neoteric CMS gems are served from a private host. Replace `SECURE_GEMHOST` with the source address.
 
 ```ruby
-gem 'pubdraft'
+# Gemfile
+source SECURE_GEMHOST do
+  gem 'pubdraft'
+end
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install pubdraft
+```sh
+$ bundle install
+```
 
 ## Usage
 
-```ruby
-# requires string column `state` to exist
-# $ rails g migration AddStateToMyModels state
+Pubdraft requires a string column on your parent model.
 
+```ruby
 class MyModel < ActiveRecord::Base
   pubdraft
+
+  # or
+
+  pubdraft field: :publication_status,
+           states: { in_review: :mark_for_review, drafted: :draft },
+           default: :in_review
 end
 
 record = MyModel.create!
@@ -41,25 +45,62 @@ MyModel.published #=> [published records]
 MyModel.drafted   #=> [drafted records]
 ```
 
-## View Helpers
+
+### Options
+
+You can customize Pubdraft per model by setting options when calling the `pubdraft` method.
+
+| Option  | Default        | Description                                 |
+|---------|----------------|---------------------------------------------|
+|`field`  | `'state'`      | Name of the attribute to use to store state |
+|`states` | `{ published: :publish, drafted: :draft }`| Hash of states to use. See [States](states)|
+|`default`| `'published'`  | Default state to set when none is provided. Disable setting a default by setting this to `false` |
+
+
+### States
+
+When setting up pubdraft on a model, you can supply your own custom set of states. States consist of a name, and an action descriptor. THe name is used as the value of the state, while the action is the natural language verb to put in that state.
+
+```ruby
+  {
+    # Name        # Action
+    published:    :publish,
+    drafted:      :draft
+    in_review:    :mark_for_review
+  }
+
+  @post.publish!
+  @post.published?                 #=> true
+  Post.published.includes?(@post)  #=> true
+
+  @post.mark_for_review!
+  @post.in_review?                 #=> true
+  Post.in_review.includes?(@post)  #=> true
+```
+
+### View Helpers
 
 The gem provides a view helper to easily populate select boxes
 ```erb
 <!-- Standard Form Helpers -->
 <%= form_for @record do |f| %>
-  <%= f.select :state, pubdraft_state_options %>
+  <%= f.select :state, pubdraft_state_options(f.object.class) %>
 <% end %>
 
 <!-- Formtastic -->
 <%= semantic_form_for @record do |f| %>
-  <%= f.input :state, :collection => pubdraft_states_for_select, :as => :select %>
+  <%= f.input :state, :as => :select,
+              :collection => pubdraft_states_for_select(f.object.class) %>
 <% end %>
 ```
 
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### Testing
+
+In the base directory:
+
+```bash
+$ rspec
+````
+
