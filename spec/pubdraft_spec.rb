@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 require 'pubdraft'
 
 class CreateTestData < ActiveRecord::Migration
@@ -55,6 +55,10 @@ describe Pubdraft do
 
   context 'customized' do
     let(:klass) { CustomThing }
+
+    it "can retrieve its custom states later" do
+      expect(klass.pubdraft_states).to_not be_empty
+    end
 
     it "defaults to in review state" do
       obj = klass.create!

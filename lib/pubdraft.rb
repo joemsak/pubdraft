@@ -1,61 +1,32 @@
 require "pubdraft/version"
 require "pubdraft/engine"
 require "pubdraft/state"
+require "pubdraft/model"
 
 module Pubdraft
-  module InstanceMethods
-    def self.included(base)
-      base.cattr_accessor :pubdraft_states
-      base.cattr_accessor :pubdraft_options
+  def pubdraft(**options)
+    include Model::InstanceMethods
+    extend Model::ClassMethods
 
-      base.send :before_create, :set_pubdraft_default,
-                unless: -> { pubdraft_options[:default] == false }
-    end
+    cattr_accessor :pubdraft_states
+    cattr_accessor :pubdraft_options
 
-    private
-    def set_pubdraft_default
-      return unless self[pubdraft_options[:field]].blank?
-      self[pubdraft_options[:field]] = pubdraft_options[:default]
-    end
+    before_create :set_pubdraft_default,
+              unless: -> { pubdraft_options[:default] == false }
+
+    states = options.delete(:states) || Pubdraft.default_states
+
+    self.pubdraft_states = State.new_set(states)
+    self.pubdraft_options = Pubdraft.default_options.merge(options)
+
+    build_pubdraft_methods!
   end
 
-  module ClassMethods
-    def pubdraft(**options)
-      send(:include, InstanceMethods)
+  def self.default_states
+    { drafted: :draft, published: :publish }
+  end
 
-      states = options.delete(:states) || {
-        drafted: :draft,
-        published: :publish
-      }
-
-      default_options = { field: 'state', default: 'published' }
-
-      self.pubdraft_states = State.new_set(states)
-      self.pubdraft_options = default_options.merge(options)
-
-      build_state_methods
-    end
-
-    private
-
-    def build_state_methods
-      field = pubdraft_options[:field]
-
-      pubdraft_states.each do |state|
-        scope state.name, -> { where(field => state.name) }
-
-        define_method state.action do
-          self[field] = state.name
-        end
-
-        define_method "#{state.action}!" do
-          self.update(field => state.name)
-        end
-
-        define_method "#{state.name}?" do
-          self[field] == "#{state.name}"
-        end
-      end
-    end
+  def self.default_options
+    { field: 'state', default: 'published' }
   end
 end

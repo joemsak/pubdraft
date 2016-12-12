@@ -12,7 +12,7 @@ module Pubdraft
     initializer 'pubdraft.extend_active_record',
                 :after => :load_config_initializers do
       ::ActiveSupport.on_load :active_record do
-        ::ActiveRecord::Base.extend(::Pubdraft::ClassMethods)
+        ::ActiveRecord::Base.extend(::Pubdraft)
       end
     end
   end
