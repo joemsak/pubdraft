@@ -6,8 +6,8 @@ require 'pubdraft/version'
 Gem::Specification.new do |gem|
   gem.name          = "pubdraft"
   gem.version       = Pubdraft::VERSION
-  gem.authors       = ["Joe Sak"]
-  gem.email         = ["joe@neotericdesign.com"]
+  gem.authors       = ["Joe Sak", "Matthew Cowie"]
+  gem.email         = ["joe@neotericdesign.com", "matthew@neotericdesign.com"]
   gem.description   = %q{Quickly add publish/draft state to your ActiveRecord models}
   gem.summary       = %q{Quick publish/draft state on ActiveRecord models}
 
