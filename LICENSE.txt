@@ -1,4 +1,4 @@
-Copyright (c) 2012 Joe Sak
+Copyright (c) 2016 Neoteric Design, Inc.
 
 MIT License
 

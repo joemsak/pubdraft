@@ -2,15 +2,16 @@
 
 Publication state management for the Neoteric Design CMS
 
+Mark models as 'published', 'drafted', or whatever you like. Filter out drafted
+material from public view.
+
 ## Installation
 
-Neoteric CMS gems are served from a private host. Replace `SECURE_GEMHOST` with the source address.
+Add pubdraft to your Gemfile
 
 ```ruby
 # Gemfile
-source SECURE_GEMHOST do
-  gem 'pubdraft'
-end
+  gem 'pubdraft', "~> 1.0.0"
 ```
 
 ```sh
@@ -62,12 +63,14 @@ You can customize Pubdraft per model by setting options when calling the `pubdra
 When setting up pubdraft on a model, you can supply your own custom set of states. States consist of a name, and an action descriptor. THe name is used as the value of the state, while the action is the natural language verb to put in that state.
 
 ```ruby
-  {
-    # Name        # Action
-    published:    :publish,
-    drafted:      :draft
-    in_review:    :mark_for_review
-  }
+  class Post < ApplicationRecord
+    pubdraft states: {
+              # Name        # Action
+              published:    :publish,
+              drafted:      :draft
+              in_review:    :mark_for_review
+            }
+  end
 
   @post.publish!
   @post.published?                 #=> true
@@ -80,7 +83,8 @@ When setting up pubdraft on a model, you can supply your own custom set of state
 
 ### View Helpers
 
-The gem provides a view helper to easily populate select boxes
+The gem provides a view helper to easily populate select boxes. It requires the object's class to read its configured states.
+
 ```erb
 <!-- Standard Form Helpers -->
 <%= form_for @record do |f| %>
